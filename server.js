@@ -32,26 +32,22 @@ const viewAllEmployeesByDepartment = async(input) => {
         db.query('SELECT id FROM department WHERE ?',{name: input},(err, results) =>{
             if(err){req(`FAILED REQUEST: ${input} department not found`)}
             else{
-                console.log(results[0].id); 
                 return res(results[0].id);
             }
         });
     });
-    console.log(`department_id = ${id}`);
     const roles_id = await new Promise((res, req) => {
         db.query('SELECT id FROM role WHERE ?', {department_id: id}, (err, results) => {
             if(err){req(`FAILED REQUEST: No roles were found for the ${input} department`)}
             else{
-                console.log(results);
                 let roles = Array(0); 
                 results.forEach((element)=>{roles.push(element.id)}); 
                 return res(roles);}
         });
     });
-    console.log(roles_id);
     let role_id_string = "";
     roles_id.forEach((e, index) => {(index < roles_id.length - 1)?role_id_string +=`${e},`:role_id_string +=`${e}`});
-    console.log(role_id_string);
+
     
     return await new Promise((res, req) => {
        db.query(`SELECT * FROM employee WHERE role_id IN (${role_id_string})`, (err, results) => {
@@ -136,22 +132,24 @@ const getEmployees = async() => {
 }
 
 const getManagers = async() => {
-    const managers = await new Promise((res, req) => {
-        db.query('SELECT first_name, last_name FROM employee WHERE manager_id IS NOT NULL', (err, results) => 
+    const managersData = await new Promise((res, req) => {
+        db.query('SELECT id FROM employee WHERE manager_id IS NOT NULL', (err, results) => 
         {
             if(err){req(err)}
             else{console.log(results);return res(results)}
         });
     });
-    console.log(managers);
+    console.log(managersData);
     let newManagerArray = Array(0);
     
-    managers.forEach((e) => {
-        const name = `${e.first_name} ${e.last_name}`;
-        if(!newManagerArray.includes(name)){
-            newManagerArray.push(name);
+    managersData.forEach((e) => {
+        if(!newManagerArray.includes(e.id)){
+            newManagerArray.push(e.id);
         }
     })
+
+    
+
     newManagerArray.push('None');
     return newManagerArray;
 }
@@ -171,7 +169,8 @@ const menuChoices = [
     "Delete Department",
     "Delete Roles",
     "Delete Employee",
-    "View Budget of Department"
+    "View Budget of Department",
+    "Exit"
 ]
 
 const menuPrompts = [
@@ -287,6 +286,7 @@ const menu = async() => {
                 });
             })
         }
+        return true;
         break;
 
         case "Add Role":
@@ -303,7 +303,7 @@ const menu = async() => {
                     }
                 });
             });
-            return await new Promise((res, req) => {
+            await new Promise((res, req) => {
                 db.query('INSERT INTO role SET ?', 
                 {
                     title: role.title,
@@ -316,13 +316,14 @@ const menu = async() => {
                     return res(results);
                 });
             });
+            return true;
         }
         break;
 
         case "Add Department": 
         {
             const department = await inquirer.prompt(addDepartmentPrompts);
-            return await new Promise((res, req) => {
+            await new Promise((res, req) => {
                 db.query('INSERT INTO department SET ?', 
                 {
                     name: department.department,
@@ -333,29 +334,32 @@ const menu = async() => {
                     return res(results);
                 });
             });
+            return true;
         }
 
         case "View all Employees": 
             console.log("View all Employees selected");
             console.table(await viewAllEmployees()); 
+            return true;
         break; 
         
         case "View all Employees by Department": 
-            try{console.log("View all Employees by Department selected");
+            try{
             const input = await inquirer.prompt([{
                 name: "department",
                 message: "Which department?",
                 type: "list",
                 choices: await getDepartments()
             }]); 
-            console.table(viewAllEmployeesByDepartment(input.department));
+            console.table(await viewAllEmployeesByDepartment(input.department));
             }catch(err){
                 throw err;
             }
+            return true;
         break;
 
         case "View all Employees by Manager": 
-            console.log("View all Employees by Manager selected");
+            //console.log("View all Employees by Manager selected");
             const input = await inquirer.prompt([{
                 name: "manager",
                 message: "Which manager?",
@@ -364,6 +368,7 @@ const menu = async() => {
             }]); 
             if(input.manager != 'None')console.table(await viewAllEmployeesByManager(input.manager));
             else console.log("No managers found");
+            return true;
         break; 
 
         case "Update Employee Role": 
@@ -413,6 +418,7 @@ const menu = async() => {
                 });
             });
         }
+        return true;
         break;
 
         case "Update Employee Manager": 
@@ -534,19 +540,23 @@ const menu = async() => {
             });
 
         }
+        return true;
         break;
 
         case "View all Roles": 
             console.log("View all Roles selected");
             console.table(await viewAllRoles());
+            return true;
         break;
 
         case "Delete Department": 
             console.log("Delete Department selected");
+            return true;
         break;
 
         case "Delete Roles": 
             console.log("Delete Roles selected");
+            return true;
         break;
 
         case "Delete Employee": 
@@ -576,20 +586,30 @@ const menu = async() => {
                 });
             });
             console.table(await viewAllEmployees()); 
+            return true;
         }
         break;
 
         case "View Budget of Department": 
             console.log("View Budget of Department selected");
-            flag = true;
+            return true;
+        break;
+
+        case "Exit":
+            return false; 
         break;
 
         default: 
             console.log("Default");
-            flag = true;
+            return true;
         break;
 
     }
+}
+
+const menuCall = async() => {
+    if(await menu()){menuCall()};
+    console.log("Use Ctrl + C to stop the terminal from running");
 }
 
 //APP methods
@@ -599,5 +619,5 @@ app.use((req, res) => {
 
 app.listen(PORT, async() => {
     console.log(`Server running on port ${PORT}`);
-    menu();    
+    menuCall();
 });
