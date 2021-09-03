@@ -1,5 +1,4 @@
-const inquirer = require('inquirer');
-const viewAllRoles = require('./server');
+const {getDepartments, getRoles, getManagers, getEmployees} = require('./get');
 
 const menuChoices = [
     "View all Employees", 
@@ -8,7 +7,6 @@ const menuChoices = [
     "Add Employee",
     "Add Department",
     "Add Role", 
-    "Remove Employee",
     "Update Employee Role",
     "Update Employee Manager",
     "View all Roles",
@@ -17,22 +15,6 @@ const menuChoices = [
     "Delete Employee",
     "View Budget of Department"
 ]
-
-let roles = [
-    "Engineer", 
-    "Tech Intern", 
-    "Accountant",
-    "HR Representative",
-    "Sales Representative",
-    "Marketing Representative",
-    "CEO"
-];
-
-let managers = [
-    "Stephanie Cabrera", 
-    "Tyra Banks",
-    "None"
-];
 
 const menuPrompts = [
     
@@ -59,13 +41,13 @@ const addEmployeePrompts = [
         name: "role",
         message: "What is the employee's role",
         type: "list",
-        choices: roles
+        choices: getRoles
     },
     {
         name: "manager",
-        message: "",
+        message: "Select this employee's manager",
         type: "list",
-        choices: managers
+        choices: getEmployees
     }
 ]
 
@@ -77,14 +59,14 @@ const addRolePrompts = [
     },
     {
         name: "salary",
-        message: "What is this role's annual salary?",
+        message: "What is this role's annual salary? (Ex: 100000)",
         type: "input"
     },
     { 
         name: "department",
         message: "What department is this role part of?",
         type: "list",
-        choices: roles
+        choices: getDepartments
     }
 ];
 
@@ -96,72 +78,5 @@ const addDepartmentPrompts = [
     }
 ];
 
-const menu = async() => {
-    const res = await inquirer.prompt(menuPrompts);
-    switch(res.menu) {
 
-        case "Add Employee":
-            await inquirer.prompt(addEmployeePrompts);
-        break;
-
-        case "Add Role":
-            await inquirer.prompt(addRolePrompts);
-        break;
-
-        case "Add Department": 
-            await inquirer.prompt(addDepartmentPrompts)
-        break;
-
-        case "View all Employees": 
-            console.log("View all Employees selected"); 
-        break; 
-        
-        case "View all Employees by Department": 
-            console.log("View all Employees by Department selected"); 
-        break;
-
-        case "View all Employees by Manager": 
-            console.log("View all Employees by Manager selected");
-        break; 
-
-        case "Remove Employee": 
-            console.log("Remove Employee selected");
-        break;
-
-        case "Update Employee Role": 
-            console.log("Update Employee Role selected");
-        break;
-
-        case "Update Employee Manager": 
-            console.log("Update Employee Manager selected");
-        break;
-
-        case "View all Roles": 
-            console.log("View all Roles selected");
-            console.table(await viewAllRoles);
-        break;
-
-        case "Delete Department": 
-            console.log("Delete Department selected");
-        break;
-
-        case "Delete Roles": 
-            console.log("Delete Roles selected");
-        break;
-
-        case "Delete Employee": 
-            console.log("Delete Employee selected");
-        break;
-
-        case "View Budget of Department": 
-            console.log("View Budget of Department selected");
-        break;
-
-        default: 
-            console.log("Default");
-        break;
-
-    }
-}
-
-module.exports = menu();
+module.exports = {menuPrompts, addEmployeePrompts, addRolePrompts, addDepartmentPrompts};
