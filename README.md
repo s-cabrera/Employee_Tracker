@@ -64,6 +64,8 @@ So that I can organize and plan my business
 
 ## Demo
 ![Employee Tracker Demo](Assets/demo.gif)
+
+
 [Demo Link](https://drive.google.com/file/d/1kE9q6IGJDXwRcaY4fk8Yr5mSSGQM7bJn/view)
 ## Minimum Requirements
 
