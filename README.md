@@ -6,7 +6,7 @@ Developers are often tasked with creating interfaces that make it easy for non-d
 
 Design the following database schema containing three tables:
 
-![Database Schema](assets/schema.png)
+![Database Schema](Assets/schema.png)
 
 * **department**:
 
@@ -63,7 +63,7 @@ So that I can organize and plan my business
 * [console.table](https://www.npmjs.com/package/console.table) to print MySQL rows to the console. 
 
 ## Demo
-![Employee Tracker Demo](assets/demo.gif)
+![Employee Tracker Demo](Assets/demo.gif)
 [Demo Link](https://drive.google.com/file/d/1kE9q6IGJDXwRcaY4fk8Yr5mSSGQM7bJn/view)
 ## Minimum Requirements
 
