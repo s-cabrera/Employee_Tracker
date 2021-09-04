@@ -600,9 +600,10 @@ const menu = async () => {
                     type: "list",
                     choices: await getDepartments()
                 }]);
-
+                //console.log(input.department);
                 //This returns all of the employees from a department
                 const employees = await viewAllEmployeesByDepartment(input.department);
+                //console.log(employees);
                 if (employees == 'FAILED REQUEST: No roles were found for the Human Resource department') {
                     console.log(`\nNo employees in the ${input.department} department.\nBudget is $0 \n`);
                     return true;

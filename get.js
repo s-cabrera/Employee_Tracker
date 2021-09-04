@@ -45,7 +45,7 @@ const getEmployees = async () => {
 
 const getManagers = async () => {
     const managerIds = await new Promise((res, req) => {
-        db.query('SELECT manager_id FROM employee WHERE manager_id IS NOT NULL', (err, results) => {
+        db.query('SELECT DISTINCT manager_id FROM employee WHERE manager_id IS NOT NULL', (err, results) => {
             if (err) { req(err) }
             else { return res(results) }
         });
@@ -54,10 +54,10 @@ const getManagers = async () => {
     let managerIdsArray = "(";
 
     managerIds.forEach((e, i) => {
-        if (!managerIdsArray.includes(`${e.manager_id}`) && i < managerIds.length - 1) {
+        if (i < managerIds.length - 1) {
             managerIdsArray += `${e.manager_id}, `;
         }
-        else if (!managerIdsArray.includes(`${e.manager_id}`) && i == managerIds.length - 1) {
+        else if (i == managerIds.length - 1) {
             managerIdsArray += `${e.manager_id})`;
         }
     })

@@ -11,9 +11,10 @@ const menuChoices = [
     "Update Employee Manager",
     "View all Roles",
     "Delete Department",
-    "Delete Roles",
+    "Delete Role",
     "Delete Employee",
-    "View Budget of Department"
+    "View Budget of Department",
+    "Exit"
 ]
 
 const menuPrompts = [

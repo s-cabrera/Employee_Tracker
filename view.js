@@ -29,31 +29,34 @@ const viewAllEmployeesByDepartment = async (input) => {
         });
     });
     //console.log(`id ${id}`);
-    const roles_id = await new Promise((res, req) => {
-        db.query('SELECT id FROM role WHERE ?', { department_id: id }, (err, results) => {
-            if (err) {
-                return res(`FAILED REQUEST: No roles were found for the ${input} department`)
-            }
-            else {
-                let roles = Array(0);
-                results.forEach((element) => { roles.push(element.id) });
-                return res(roles);
-            }
-        })
-    });
-    //console.log(`roles_id: ${roles_id}`);
-    if (roles_id == ``) {
-        return `FAILED REQUEST: No roles were found for the ${input} department`;
-    }
+    // const roles_id = await new Promise((res, req) => {
+    //     db.query('SELECT id FROM role WHERE ?', { department_id: id }, (err, results) => {
+    //         if (err) {
+    //             return res(`FAILED REQUEST: No roles were found for the ${input} department`)
+    //         }
+    //         else {
+    //             let roles = Array(0);
+    //             results.forEach((element) => { roles.push(element.id) });
+    //             return res(roles);
+    //         }
+    //     })
+    // });
+    // //console.log(`roles_id: ${roles_id}`);
+    // if (roles_id == ``) {
+    //     return `FAILED REQUEST: No roles were found for the ${input} department`;
+    // }
 
-    let role_id_string = "";
-    roles_id.forEach((e, index) => { (index < roles_id.length - 1) ? role_id_string += `${e},` : role_id_string += `${e}` });
+    // let role_id_string = "";
+    // roles_id.forEach((e, index) => { (index < roles_id.length - 1) ? role_id_string += `${e},` : role_id_string += `${e}` });
 
 
     return await new Promise((res, req) => {
-        db.query(`SELECT * FROM employee WHERE role_id IN (${role_id_string})`, (err, results) => {
+        //db.query(`SELECT role.title, employee.first_name, employee.last_name, employee.manager_id FROM employee
+        db.query(`SELECT employee.first_name, employee.last_name, employee.role_id, employee.manager_id FROM employee 
+        JOIN role on employee.role_id = role.id WHERE role.department_id=${id};`, (err, results) => {
             if (err) { res(`FAILED REQUEST: No employees were found for the ${input} department`) }
             else {
+                if(results == Array(0)){return res(`\nNo employees in the ${input} department\n`)}
                 return res(results);
             }
         });
